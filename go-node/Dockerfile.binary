@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-ARG XRAY_VERSION=25.1.30
+ARG XRAY_VERSION=26.10.21
 
 RUN apk add --no-cache wget unzip
 
