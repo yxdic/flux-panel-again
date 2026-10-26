@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 ARG TARGETARCH
-ARG XRAY_VERSION=26.6.1
+ARG XRAY_VERSION=26.6.27
 
 RUN apk add --no-cache ca-certificates iproute2 wget unzip
 
