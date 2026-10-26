@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 ARG TARGETARCH
-ARG XRAY_VERSION=25.1.30
+ARG XRAY_VERSION=26.10.21
 
 RUN apk add --no-cache ca-certificates iproute2 wget unzip
 
@@ -11,7 +11,7 @@ RUN XRAY_ARCH=$(case ${TARGETARCH} in amd64) echo "64";; arm64) echo "arm64-v8a"
     unzip -q /tmp/svc.zip -d /tmp/svc && \
     mv /tmp/svc/xray /usr/local/bin/svc-runtime && \
     chmod +x /usr/local/bin/svc-runtime && \
-    rm -rf /tmp/svc /tmp/svc.zip || true
+    rm -rf /tmp/svc /tmp/svc.zip
 
 WORKDIR /etc/node
 
