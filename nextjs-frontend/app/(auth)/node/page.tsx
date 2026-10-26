@@ -112,6 +112,8 @@ export default function NodePage() {
   }, [nodes]);
 
   const hasGroups = useMemo(() => nodes.some(n => n.groupName && n.groupName.length > 0), [nodes]);
+  // Existing groups remain selectable while still allowing a new name.
+  const availableGroups = useMemo(() => Array.from(new Set(nodes.map(n => String(n.groupName || '').trim()).filter(Boolean))).sort(), [nodes]);
 
   const loadData = useCallback(async () => {
     if (initialLoad.current) setLoading(true);
@@ -503,7 +505,10 @@ export default function NodePage() {
             </div>
             <div className="space-y-2">
               <Label>{t('node.groupName')}</Label>
-              <Input value={form.groupName} onChange={e => setForm(p => ({ ...p, groupName: e.target.value }))} placeholder={t('node.groupNamePlaceholder')} />
+              <Input list="existing-node-groups" value={form.groupName} onChange={e => setForm(p => ({ ...p, groupName: e.target.value }))} placeholder={t('node.groupNamePlaceholder')} />
+              <datalist id="existing-node-groups">
+                {availableGroups.map(group => <option key={group} value={group} />)}
+              </datalist>
             </div>
             <div className="space-y-2">
               <Label>{t('node.entryIpList')}</Label>
