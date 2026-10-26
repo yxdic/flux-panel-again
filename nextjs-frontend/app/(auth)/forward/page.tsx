@@ -71,23 +71,23 @@ export default function ForwardPage() {
   const loadLatency = useCallback(async (fwds: any[]) => {
     const active = fwds.filter((f: any) => f.status === 1);
     if (active.length === 0) { setLatencyMap({}); return; }
-    const results = await Promise.all(
-      active.map(async (f: any) => {
-        try {
-          const res = await getLatencyHistory(f.id, 1);
-          if (res.code === 0 && res.data && (res.data as any[]).length > 0) {
-            const records = res.data as any[];
-            const last = records[records.length - 1];
-            return { id: f.id, latency: last.latency, success: last.success };
-          }
-        } catch {}
-        return { id: f.id, latency: 0, success: false };
-      })
-    );
-    const map: Record<number, { latency: number; success: boolean }> = {};
-    for (const r of results) {
-      map[r.id] = { latency: r.latency, success: r.success };
-    }
+    const results = await Promise.all(active.map(async (f: any) => {
+      try {
+        const res = await getLatencyHistory(f.id, 1);
+        if (res.code === 0 && Array.isArray(res.data) && res.data.length > 0) {
+          const records = res.data as Array<{ recordTime: number; latency: number; success: boolean }>;
+          const latestTime = Math.max(...records.map(r => r.recordTime));
+          // Multiple targets are measured in a single round. One reachable target is sufficient.
+          const latestRound = records.filter(r => r.recordTime === latestTime);
+          const reachable = latestRound.filter(r => r.success && Number.isFinite(r.latency) && r.latency >= 0);
+          const best = reachable.sort((a, b) => a.latency - b.latency)[0];
+          return { id: f.id, value: { latency: best?.latency ?? -1, success: !!best } };
+        }
+      } catch {}
+      return { id: f.id, value: null };
+    }));
+    const map: Record<number, { latency: number; success: boolean } | null> = {};
+    for (const r of results) map[r.id] = r.value;
     setLatencyMap(map);
   }, []);
 
