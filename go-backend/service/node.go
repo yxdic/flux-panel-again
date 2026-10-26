@@ -382,7 +382,7 @@ func GenerateDockerInstallCommand(id int64, clientAddr string) dto.R {
 	if imageTag == "" || imageTag == "dev" {
 		imageTag = "latest"
 	}
-	imageRef := fmt.Sprintf("0xnetuser/node:%s", imageTag)
+	imageRef := fmt.Sprintf("ghcr.io/yxdic/node:%s", imageTag)
 	appName := node.DisguiseName
 	secName := node.XrayDisguiseName
 	containerName := sanitizeContainerName(appName)
